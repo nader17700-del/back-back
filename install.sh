@@ -13,10 +13,8 @@ CONFIG_DIR="/etc/backhaul"
 CONFIG_FILE="${CONFIG_DIR}/config.toml"
 SERVICE_FILE="/etc/systemd/system/backhaul.service"
 
-# GitHub Info (CHANGE THIS TO YOUR REPO)
-# Example: https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v0.1/backhaul_linux_amd64
-# For now, it assumes the binary is in the same directory if run locally, or downloads from your link.
-DOWNLOAD_URL="https://github.com/USERNAME/REPO/raw/main/backhaul_linux_amd64"
+# GitHub Info
+DOWNLOAD_URL="https://github.com/nader17700-del/back-back/raw/main/backhaul_linux_amd64"
 
 check_root() {
     if [[ $EUID -ne 0 ]]; then
