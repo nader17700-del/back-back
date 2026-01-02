@@ -48,11 +48,24 @@ install_dependencies() {
 }
 
 get_server_ip() {
-    curl -s https://api.ipify.org || curl -s https://icanhazip.com
+    local ip=""
+    if command -v curl &> /dev/null; then
+        ip=$(curl -s --max-time 2 https://api.ipify.org)
+        [[ -z "$ip" ]] && ip=$(curl -s --max-time 2 https://icanhazip.com)
+    elif command -v wget &> /dev/null; then
+        ip=$(wget -qO- --timeout=2 https://api.ipify.org)
+        [[ -z "$ip" ]] && ip=$(wget -qO- --timeout=2 https://icanhazip.com)
+    fi
+    
+    if [[ -z "$ip" ]]; then
+        ip="Unknown"
+    fi
+    echo "$ip"
 }
 
 show_logo() {
     clear
+    PUBLIC_IP=$(get_server_ip)
     echo -e "${CYAN}"
     echo "  ____   _    ____ _  __ _   _    _    _   _ _     "
     echo " | __ ) / \  / ___| |/ /| | | |  / \  | | | | |    "
@@ -62,7 +75,7 @@ show_logo() {
     echo -e "${PLAIN}"
     echo -e "${PURPLE}  Backhaul User Friendly Manager${PLAIN}"
     echo -e "${PURPLE}  Install Path: ${INSTALL_DIR}${PLAIN}"
-    echo -e "${PURPLE}  Server IP:    $(get_server_ip)${PLAIN}"
+    echo -e "${PURPLE}  Server IP:    ${GREEN}${PUBLIC_IP}${PLAIN}"
     echo -e "--------------------------------------------------"
 }
 
