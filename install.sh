@@ -2,7 +2,6 @@
 
 # ==========================================
 # Backhaul Pro Installer / Manager v1.1
-# Created based on user requirements for UI & Functionality
 # ==========================================
 
 # Colors
@@ -49,27 +48,10 @@ install_dependencies() {
 
 get_server_ip() {
     local ip=""
-    
-    # Method 1: Get IP from default route (Best for VPS)
     ip=$(ip -4 route get 8.8.8.8 2>/dev/null | grep -oP 'src \K\S+')
-    
-    # Method 2: Fallback to hostname -I (Gets first IP)
-    if [[ -z "$ip" ]]; then
-        ip=$(hostname -I 2>/dev/null | awk '{print $1}')
-    fi
-
-    # Method 3: Fallback to external services
-    if [[ -z "$ip" ]]; then
-        if command -v curl &> /dev/null; then
-            ip=$(curl -s --max-time 2 https://api.ipify.org)
-        elif command -v wget &> /dev/null; then
-            ip=$(wget -qO- --timeout=2 https://api.ipify.org)
-        fi
-    fi
-    
-    if [[ -z "$ip" ]]; then
-        ip="Unknown"
-    fi
+    if [[ -z "$ip" ]]; then ip=$(hostname -I 2>/dev/null | awk '{print $1}'); fi
+    if [[ -z "$ip" ]]; then ip=$(curl -s --max-time 2 https://api.ipify.org); fi
+    if [[ -z "$ip" ]]; then ip="Unknown"; fi
     echo "$ip"
 }
 
@@ -218,10 +200,7 @@ EOF
         read -p "Remote Server IP: " r_ip
         read -p "Remote Tunnel Port: " r_port
         
-        # Proxy Protocol (Client side usually doesn't need this setting as listener, but good to have logic if needed for upstream)
-        # Usually client just connects. We keep it simple.
-        
-        # IP Limit (Now supported on Client side too!)
+        # IP Limit (Client Side Support)
         read -p "Enable IP Limit? (read from x-ui) [y/N]: " iplimit_yn
         if [[ "$iplimit_yn" =~ ^[Yy]$ ]]; then
             iplimit="true"
@@ -358,11 +337,9 @@ main_menu() {
 }
 
 # Entry Point
-# Helper variable
 PUBLIC_IP=$(get_server_ip)
 
 if [[ $# > 0 ]]; then
-    # Command line mode (for fast install)
     if [[ $1 == "install" ]]; then
         check_root
         install_backhaul
