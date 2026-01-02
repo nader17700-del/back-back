@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==========================================
-# Backhaul Pro Installer / Manager
+# Backhaul Pro Installer / Manager v1.1
 # Created based on user requirements for UI & Functionality
 # ==========================================
 
@@ -49,12 +49,22 @@ install_dependencies() {
 
 get_server_ip() {
     local ip=""
-    if command -v curl &> /dev/null; then
-        ip=$(curl -s --max-time 2 https://api.ipify.org)
-        [[ -z "$ip" ]] && ip=$(curl -s --max-time 2 https://icanhazip.com)
-    elif command -v wget &> /dev/null; then
-        ip=$(wget -qO- --timeout=2 https://api.ipify.org)
-        [[ -z "$ip" ]] && ip=$(wget -qO- --timeout=2 https://icanhazip.com)
+    
+    # Method 1: Get IP from default route (Best for VPS)
+    ip=$(ip -4 route get 8.8.8.8 2>/dev/null | grep -oP 'src \K\S+')
+    
+    # Method 2: Fallback to hostname -I (Gets first IP)
+    if [[ -z "$ip" ]]; then
+        ip=$(hostname -I 2>/dev/null | awk '{print $1}')
+    fi
+
+    # Method 3: Fallback to external services
+    if [[ -z "$ip" ]]; then
+        if command -v curl &> /dev/null; then
+            ip=$(curl -s --max-time 2 https://api.ipify.org)
+        elif command -v wget &> /dev/null; then
+            ip=$(wget -qO- --timeout=2 https://api.ipify.org)
+        fi
     fi
     
     if [[ -z "$ip" ]]; then
