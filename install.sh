@@ -221,6 +221,17 @@ EOF
         # Proxy Protocol (Client side usually doesn't need this setting as listener, but good to have logic if needed for upstream)
         # Usually client just connects. We keep it simple.
         
+        # IP Limit (Now supported on Client side too!)
+        read -p "Enable IP Limit? (read from x-ui) [y/N]: " iplimit_yn
+        if [[ "$iplimit_yn" =~ ^[Yy]$ ]]; then
+            iplimit="true"
+            read -p "X-UI DB Path [/etc/x-ui/x-ui.db]: " xui_path
+            xui_path=${xui_path:-"/etc/x-ui/x-ui.db"}
+        else
+            iplimit="false"
+            xui_path=""
+        fi
+        
         log_info "Generating Client Config..."
         
         cat > "$CONFIG_FILE" <<EOF
@@ -236,6 +247,8 @@ mux_session = 1
 aggressive_pool = true
 sniffer = false
 web_port = 0
+ip_limit = $iplimit
+xui_db_path = "$xui_path"
 EOF
     fi
     
