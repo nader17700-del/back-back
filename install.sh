@@ -65,7 +65,6 @@ get_server_ip() {
 
 show_logo() {
     clear
-    PUBLIC_IP=$(get_server_ip)
     echo -e "${CYAN}"
     echo "  ____   _    ____ _  __ _   _    _    _   _ _     "
     echo " | __ ) / \  / ___| |/ /| | | |  / \  | | | | |    "
@@ -336,6 +335,9 @@ main_menu() {
 }
 
 # Entry Point
+# Helper variable
+PUBLIC_IP=$(get_server_ip)
+
 if [[ $# > 0 ]]; then
     # Command line mode (for fast install)
     if [[ $1 == "install" ]]; then
