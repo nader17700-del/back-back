@@ -47,6 +47,10 @@ install_dependencies() {
     fi
 }
 
+get_server_ip() {
+    curl -s https://api.ipify.org || curl -s https://icanhazip.com
+}
+
 show_logo() {
     clear
     echo -e "${CYAN}"
@@ -58,6 +62,7 @@ show_logo() {
     echo -e "${PLAIN}"
     echo -e "${PURPLE}  Backhaul User Friendly Manager${PLAIN}"
     echo -e "${PURPLE}  Install Path: ${INSTALL_DIR}${PLAIN}"
+    echo -e "${PURPLE}  Server IP:    $(get_server_ip)${PLAIN}"
     echo -e "--------------------------------------------------"
 }
 
